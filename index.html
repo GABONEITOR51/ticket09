@@ -10,22 +10,20 @@
         width: 80mm; /* Ancho del ticket */
         margin: 0; /* Eliminamos los márgenes para que el ticket ocupe todo el ancho */
         padding: 0; /* Eliminamos el relleno para que el ticket sea compacto */
-        font-size: 18px; /* Tamaño original del texto */
+        font-size: 18px; /* Incremento del tamaño del texto */
     }
     .ticket {
         background-color: #f9f9f9;
         padding: 12px; /* Incremento del espacio interno del ticket */
-        border: 1px solid #ccc; /* Borde alrededor del ticket */
+        border: 2px solid #ccc; /* Borde alrededor del ticket */
         border-radius: 10px; /* Bordes redondeados */
-        max-height: 200mm; /* Definimos el largo máximo del ticket */
-        overflow: hidden; /* Si el contenido excede, se oculta */
     }
     .ticket-header {
         text-align: center;
         margin-bottom: 20px; /* Espacio entre el encabezado y el resto del ticket */
     }
     .ticket-details {
-        margin-bottom: 20px; /* Espacio general entre secciones */
+        margin-bottom: 20px; /* Espacio entre detalles del ticket */
     }
     .ticket-item {
         margin-bottom: 10px; /* Espacio entre elementos del ticket */
@@ -36,20 +34,14 @@
         background-color: #ccc;
         margin: 12px 0; /* Espacio entre líneas divisorias */
     }
-    .logo {
-        display: block;
-        margin: 0 auto;
-        width: 150px; /* Ajusta el tamaño del logo */
-        height: auto; /* Mantén la proporción del logo */
-    }
 </style>
 </head>
 <body onload="window.print()" onfocus="window.close">
     <div class="ticket" id="ticket">
         <div class="ticket-header">
-            <!-- Referencia al logo local -->
-            <img src="./LOGO.png" alt="Logo del negocio" class="logo">
             <h1>805 MULTISERVICES</h1>
+            <!-- Agregar una imagen al encabezado -->
+             <hr class="separator">
         </div>
         <div class="ticket-details">
             <div class="ticket-item">
@@ -97,7 +89,7 @@
             const executive = urlParams.get('leatendio');
             const date = urlParams.get('fecha');
 
-            // Actualizar detalles del ticket
+            // Update ticket details
             document.getElementById('productName').textContent = productName;
             document.getElementById('customerName').textContent = customerName;
             document.getElementById('phoneNumber').textContent = phoneNumber;
