@@ -25,4 +25,89 @@
         margin-bottom: 20px; /* Espacio entre el encabezado y el resto del ticket */
     }
     .ticket-details {
+        margin-bottom: 20px; /* Espacio general entre secciones */
+    }
+    .ticket-item {
+        margin-bottom: 10px; /* Espacio entre elementos del ticket */
+    }
+    hr.separator {
+        border: none;
+        height: 1px;
+        background-color: #ccc;
+        margin: 12px 0; /* Espacio entre líneas divisorias */
+    }
+    .logo {
+        display: block;
+        margin: 0 auto;
+        width: 150px; /* Ajusta el tamaño del logo */
+        height: auto; /* Mantén la proporción del logo */
+    }
+</style>
+</head>
+<body onload="window.print()" onfocus="window.close">
+    <div class="ticket" id="ticket">
+        <div class="ticket-header">
+            <!-- Referencia al logo local -->
+            <img src="./LOGO.png" alt="Logo del negocio" class="logo">
+            <h1>805 MULTISERVICES</h1>
+        </div>
+        <div class="ticket-details">
+            <div class="ticket-item">
+                <strong>PRODUCTO:</strong> <span id="productName"></span>
+            </div>
+            <div class="ticket-item">
+                <strong>CLIENTE:</strong> <span id="customerName"></span>
+            </div>
+            <div class="ticket-item">
+                <strong>TELÉFONO:</strong> <span id="phoneNumber"></span>
+            </div>
+            <hr class="separator">
+            <div class="ticket-item">
+                <strong>Forma de pago:</strong> <span id="paymentMethod"></span>
+            </div>
+            <div class="ticket-item">
+                <strong>Precio venta:</strong> $<span id="price"></span>
+            </div>
+            <div class="ticket-item">
+                <strong>Pago cliente:</strong> $<span id="customerPayment"></span>
+            </div>
+            <div class="ticket-item">
+                <strong>Cambio:</strong> $<span id="change"></span>
+            </div>
+            <hr class="separator">
+            <div class="ticket-item">
+                <strong>Le atendió:</strong> <span id="executive"></span>
+            </div>
+            <div class="ticket-item">
+                <strong>Fecha:</strong> <span id="date"></span>
+            </div>
+        </div>
+    </div>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productName = urlParams.get('producto');
+            const customerName = urlParams.get('cliente');
+            const phoneNumber = urlParams.get('telefono');
+            const paymentMethod = urlParams.get('formadepago');
+            const price = parseFloat(urlParams.get('precio')).toFixed(2);
+            const customerPayment = parseFloat(urlParams.get('pagocliente')).toFixed(2);
+            const change = parseFloat(urlParams.get('cambio')).toFixed(2);
+            const executive = urlParams.get('leatendio');
+            const date = urlParams.get('fecha');
+
+            // Actualizar detalles del ticket
+            document.getElementById('productName').textContent = productName;
+            document.getElementById('customerName').textContent = customerName;
+            document.getElementById('phoneNumber').textContent = phoneNumber;
+            document.getElementById('paymentMethod').textContent = paymentMethod;
+            document.getElementById('price').textContent = price;
+            document.getElementById('customerPayment').textContent = customerPayment;
+            document.getElementById('change').textContent = change;
+            document.getElementById('executive').textContent = executive;
+            document.getElementById('date').textContent = date;
+        });
+    </script>
+</body>
+</html>
