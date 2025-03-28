@@ -10,20 +10,22 @@
         width: 80mm; /* Ancho del ticket */
         margin: 0; /* Eliminamos los márgenes para que el ticket ocupe todo el ancho */
         padding: 0; /* Eliminamos el relleno para que el ticket sea compacto */
-        font-size: 18px; /* Incremento del tamaño del texto */
+        font-size: 18px; /* Tamaño original del texto */
     }
     .ticket {
         background-color: #f9f9f9;
         padding: 12px; /* Incremento del espacio interno del ticket */
-        border: 2px solid #ccc; /* Borde alrededor del ticket */
+        border: 1px solid #ccc; /* Borde alrededor del ticket */
         border-radius: 10px; /* Bordes redondeados */
+        max-height: 200mm; /* Definimos el largo máximo del ticket */
+        overflow: hidden; /* Si el contenido excede, se oculta */
     }
     .ticket-header {
         text-align: center;
         margin-bottom: 20px; /* Espacio entre el encabezado y el resto del ticket */
     }
     .ticket-details {
-        margin-bottom: 20px; /* Espacio entre detalles del ticket */
+        margin-bottom: 20px; /* Espacio general entre secciones */
     }
     .ticket-item {
         margin-bottom: 10px; /* Espacio entre elementos del ticket */
@@ -40,8 +42,6 @@
     <div class="ticket" id="ticket">
         <div class="ticket-header">
             <h1>805 MULTISERVICES</h1>
-            <!-- Agregar una imagen al encabezado -->
-            <img src="images/Aspose.Words.02b1c9e5-9999-4ae4-a8c4-d9155b0bed52.001.png" alt="Logo" width="200">
         </div>
         <div class="ticket-details">
             <div class="ticket-item">
@@ -89,7 +89,7 @@
             const executive = urlParams.get('leatendio');
             const date = urlParams.get('fecha');
 
-            // Update ticket details
+            // Actualizar detalles del ticket
             document.getElementById('productName').textContent = productName;
             document.getElementById('customerName').textContent = customerName;
             document.getElementById('phoneNumber').textContent = phoneNumber;
