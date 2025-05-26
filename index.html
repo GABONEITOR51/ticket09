@@ -71,7 +71,7 @@
     <strong>Le atendió:</strong> <span id="executive"></span>
 </div> <!-- Aquí cerramos correctamente el div antes de agregar la observación -->
 <div class="ticket-item">
-    <strong>Observacion:</strong> <span id="Observacion"></span>
+    <strong>observacion:</strong> <span id="observacion"></span>
 </div>
 <div class="ticket-item">
     <strong>Fecha:</strong> <span id="date"></span>
@@ -90,7 +90,7 @@
             const customerPayment = parseFloat(urlParams.get('pagocliente')).toFixed(2);
             const change = parseFloat(urlParams.get('cambio')).toFixed(2);
             const executive = urlParams.get('leatendio');
-            const Observacion = urlParams.get('Observacion');
+            const Observacion = urlParams.get('observacion');
             const date = urlParams.get('fecha');
 
             // Update ticket details
