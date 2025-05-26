@@ -79,32 +79,45 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const productName = urlParams.get('producto');
-            const customerName = urlParams.get('cliente');
-            const phoneNumber = urlParams.get('telefono');
-            const paymentMethod = urlParams.get('formadepago');
-            const price = parseFloat(urlParams.get('precio')).toFixed(2);
-            const customerPayment = parseFloat(urlParams.get('pagocliente')).toFixed(2);
-            const change = parseFloat(urlParams.get('cambio')).toFixed(2);
-            const executive = urlParams.get('leatendio');
-            const observacion = urlParams.get('observacion');
-            const date = urlParams.get('fecha');
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const productName = urlParams.get('producto');
+        const customerName = urlParams.get('cliente');
+        const phoneNumber = urlParams.get('telefono');
+        const paymentMethod = urlParams.get('formadepago');
+        const price = parseFloat(urlParams.get('precio')).toFixed(2);
+        const customerPayment = parseFloat(urlParams.get('pagocliente')).toFixed(2);
+        const change = parseFloat(urlParams.get('cambio')).toFixed(2);
+        const executive = urlParams.get('leatendio');
+        const observacion = urlParams.get('observacion');
+        const dateString = urlParams.get('fecha');
 
-            // Update ticket details
-            document.getElementById('productName').textContent = productName;
-            document.getElementById('customerName').textContent = customerName;
-            document.getElementById('phoneNumber').textContent = phoneNumber;
-            document.getElementById('paymentMethod').textContent = paymentMethod;
-            document.getElementById('price').textContent = price;
-            document.getElementById('customerPayment').textContent = customerPayment;
-            document.getElementById('change').textContent = change;
-            document.getElementById('executive').textContent = executive;
-            document.getElementById('date').textContent = date;
-            document.getElementById('Observacion').textContent = observacion;
-        });
-    </script>
+        // Actualizar detalles del ticket
+        document.getElementById('productName').textContent = productName;
+        document.getElementById('customerName').textContent = customerName;
+        document.getElementById('phoneNumber').textContent = phoneNumber;
+        document.getElementById('paymentMethod').textContent = paymentMethod;
+        document.getElementById('price').textContent = price;
+        document.getElementById('customerPayment').textContent = customerPayment;
+        document.getElementById('change').textContent = change;
+        document.getElementById('executive').textContent = executive;
+        document.getElementById('Observacion').textContent = observacion;
+
+        // Convertir formato de fecha de DD/MM/YYYY a "Mes, Día y Año"
+        if (dateString) {
+            const parts = dateString.split('/');
+            const day = parts[0];
+            const month = parts[1];
+            const year = parts[2];
+
+            const formattedDate = new Date(`${year}-${month}-${day}`);
+            const options = { month: 'long', day: 'numeric', year: 'numeric' };
+            const finalDate = formattedDate.toLocaleDateString('es-ES', options);
+
+            document.getElementById('date').textContent = finalDate;
+        }
+    });
+</script>
 </body>
 </html>
