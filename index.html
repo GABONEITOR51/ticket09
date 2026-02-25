@@ -1,110 +1,184 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>805 MULTISERVICES</title>
+
 <style>
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        width: 80mm; /* Ancho del ticket */
-        margin: 0; /* Eliminamos los márgenes para que el ticket ocupe todo el ancho */
-        padding: 0; /* Eliminamos el relleno para que el ticket sea compacto */
-        font-size: 18px; /* Incremento del tamaño del texto */
+        width: 80mm;
+        margin: 0;
+        padding: 0;
+        font-size: 18px;
     }
     .ticket {
         background-color: #f9f9f9;
-        padding: 12px; /* Incremento del espacio interno del ticket */
-        border: 2px solid #ccc; /* Borde alrededor del ticket */
-        border-radius: 10px; /* Bordes redondeados */
+        padding: 12px;
+        border: 2px solid #ccc;
+        border-radius: 10px;
     }
     .ticket-header {
         text-align: center;
-        margin-bottom: 20px; /* Espacio entre el encabezado y el resto del ticket */
-    }
-    .ticket-details {
-        margin-bottom: 20px; /* Espacio entre detalles del ticket */
+        margin-bottom: 20px;
     }
     .ticket-item {
-        margin-bottom: 10px; /* Espacio entre elementos del ticket */
+        margin-bottom: 10px;
     }
     hr.separator {
         border: none;
         height: 1px;
         background-color: #ccc;
-        margin: 12px 0; /* Espacio entre líneas divisorias */
+        margin: 12px 0;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 16px;
+    }
+    th, td {
+        padding: 2px 0;
+    }
+    th {
+        text-align: left;
+        border-bottom: 1px solid #ccc;
+    }
+    td {
+        border-bottom: 1px dotted #ddd;
+    }
+    td.num {
+        text-align: right;
     }
 </style>
 </head>
-<body onload="window.print()" onfocus="window.close">
-    <div class="ticket" id="ticket">
+
+<body onload="window.print()" onfocus="window.close()">
+    <div class="ticket">
+
         <div class="ticket-header">
             <h1>805 MULTISERVICES</h1>
-            <!-- Agregar una imagen al encabezado -->
+        </div>
 
+        <!-- Datos del ticket -->
+        <div class="ticket-item"><strong>PRODUCTO:</strong> <span id="productName"></span></div>
+        <div class="ticket-item"><strong>CLIENTE:</strong> <span id="customerName"></span></div>
+        <div class="ticket-item"><strong>TELÉFONO:</strong> <span id="phoneNumber"></span></div>
+
+        <!-- Tabla del carrito -->
+        <div class="ticket-item"><strong>Movimientos:</strong></div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th class="num">Entrada</th>
+                    <th class="num">Salida</th>
+                </tr>
+            </thead>
+            <tbody id="productosBody"></tbody>
+        </table>
+
+        <!-- Total calculado desde JSON -->
+        <div class="ticket-item" style="margin-top:10px; font-size:18px;">
+            <strong>Total:</strong> $<span id="totalCarrito"></span>
         </div>
-        <div class="ticket-details">
-            <div class="ticket-item">
-                <strong>PRODUCTO:</strong> <span id="productName"></span>
-            </div>
-            <div class="ticket-item">
-                <strong>CLIENTE:</strong> <span id="customerName"></span>
-            </div>
-            <div class="ticket-item">
-                <strong>TELÉFONO:</strong> <span id="phoneNumber"></span>
-            </div>
-            <hr class="separator">
-            <div class="ticket-item">
-                <strong>Forma de pago:</strong> <span id="paymentMethod"></span>
-            </div>
-            <div class="ticket-item">
-                <strong>Precio venta:</strong> $<span id="price"></span>
-            </div>
-            <div class="ticket-item">
-                <strong>Pago cliente:</strong> $<span id="customerPayment"></span>
-            </div>
-            <div class="ticket-item">
-                <strong>Cambio:</strong> $<span id="change"></span>
-            </div>
-            <hr class="separator">
-<div class="ticket-item">
-    <strong>Le atendió:</strong> <span id="executive"></span>
-</div> <!-- Aquí cerramos correctamente el div antes de agregar la observación -->
-<div class="ticket-item">
-    <strong>Observacion:</strong> <span id="Observacion"></span>
-</div>
-<div class="ticket-item">
-    <strong>Fecha:</strong> <span id="date"></span>
-</div>
-        </div>
+
+        <hr class="separator">
+
+        <div class="ticket-item"><strong>Forma de pago:</strong> <span id="paymentMethod"></span></div>
+        <div class="ticket-item"><strong>Precio venta:</strong> $<span id="price"></span></div>
+        <div class="ticket-item"><strong>Pago cliente:</strong> $<span id="customerPayment"></span></div>
+        <div class="ticket-item"><strong>Cambio:</strong> $<span id="change"></span></div>
+
+        <hr class="separator">
+
+        
+        <hr class="separator">
+
+        <div class="ticket-item"><strong>Le atendió:</strong> <span id="executive"></span></div>
+        <div class="ticket-item"><strong>Observación:</strong> <span id="Observacion"></span></div>
+        <div class="ticket-item"><strong>Fecha:</strong> <span id="date"></span></div>
+
+
+        
     </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const productName = urlParams.get('producto');
-            const customerName = urlParams.get('cliente');
-            const phoneNumber = urlParams.get('telefono');
-            const paymentMethod = urlParams.get('formadepago');
-            const price = parseFloat(urlParams.get('precio')).toFixed(2);
-            const customerPayment = parseFloat(urlParams.get('pagocliente')).toFixed(2);
-            const change = parseFloat(urlParams.get('cambio')).toFixed(2);
-            const executive = urlParams.get('leatendio');
-            const observacion = urlParams.get('observacion');
-            const date = urlParams.get('fecha');
+<script>
+document.addEventListener("DOMContentLoaded", function() {
 
-            // Update ticket details
-            document.getElementById('productName').textContent = productName;
-            document.getElementById('customerName').textContent = customerName;
-            document.getElementById('phoneNumber').textContent = phoneNumber;
-            document.getElementById('paymentMethod').textContent = paymentMethod;
-            document.getElementById('price').textContent = price;
-            document.getElementById('customerPayment').textContent = customerPayment;
-            document.getElementById('change').textContent = change;
-            document.getElementById('executive').textContent = executive;
-            document.getElementById('date').textContent = date;
-            document.getElementById('Observacion').textContent = observacion;
-        });
-    </script>
+    const urlParams = new URLSearchParams(window.location.search);
+
+    const productName      = urlParams.get('producto');
+    const customerName     = urlParams.get('cliente');
+    const phoneNumber      = urlParams.get('telefono');
+    const paymentMethod    = urlParams.get('formadepago');
+    const priceParam       = urlParams.get('precio');
+    const pagoClienteParam = urlParams.get('pagocliente');
+    const cambioParam      = urlParams.get('cambio');
+    const executive        = urlParams.get('leatendio');
+    const observacion      = urlParams.get('observacion');
+    const date             = urlParams.get('fecha');
+    const productosJSON    = urlParams.get('productos');
+
+    // Asignar valores simples
+    document.getElementById('productName').textContent   = productName || '';
+    document.getElementById('customerName').textContent  = customerName || '';
+    document.getElementById('phoneNumber').textContent   = phoneNumber || '';
+    document.getElementById('paymentMethod').textContent = paymentMethod || '';
+    document.getElementById('executive').textContent     = executive || '';
+    document.getElementById('Observacion').textContent   = observacion || '';
+    document.getElementById('date').textContent          = date || '';
+
+    if (priceParam) document.getElementById('price').textContent = Number(priceParam).toFixed(2);
+    if (pagoClienteParam) document.getElementById('customerPayment').textContent = Number(pagoClienteParam).toFixed(2);
+    if (cambioParam) document.getElementById('change').textContent = Number(cambioParam).toFixed(2);
+
+    // Procesar JSON del carrito
+    let totalCarrito = 0;
+
+    if (productosJSON) {
+        try {
+            const productos = JSON.parse(productosJSON);
+            const tbody = document.getElementById('productosBody');
+
+            productos.forEach(item => {
+                const tr = document.createElement('tr');
+
+                const tdId = document.createElement('td');
+                tdId.textContent = item.IDProducto || '';
+
+                const entrada = Number(item.Entrada || 0);
+                const salida  = Number(item.Salida  || 0);
+
+                const tdEntrada = document.createElement('td');
+                tdEntrada.className = 'num';
+                tdEntrada.textContent = entrada ? entrada.toFixed(2) : '';
+
+                const tdSalida = document.createElement('td');
+                tdSalida.className = 'num';
+                tdSalida.textContent = salida ? salida.toFixed(2) : '';
+
+                tr.appendChild(tdId);
+                tr.appendChild(tdEntrada);
+                tr.appendChild(tdSalida);
+                tbody.appendChild(tr);
+
+                totalCarrito += entrada;
+                totalCarrito -= salida;
+            });
+
+        } catch (e) {
+            console.error("Error al procesar productos:", e);
+        }
+    }
+
+    document.getElementById('totalCarrito').textContent = totalCarrito.toFixed(2);
+
+});
+</script>
+
 </body>
 </html>
+
+
