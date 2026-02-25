@@ -99,7 +99,6 @@
 
         <hr class="separator">
   
-
         <div class="ticket-item"><strong>Pago en:</strong> <span id="paymentMethod"></span></div>
         <div class="ticket-item"><strong>Precio venta:</strong> $<span id="price"></span></div>
         <div class="ticket-item"><strong>Pago cliente:</strong> $<span id="customerPayment"></span></div>
@@ -115,6 +114,12 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
+
+    // 🔥 Función para quitar .00 si es entero
+    function limpiarNumero(n) {
+        if (!n || n === 0) return "";
+        return Number(n) % 1 === 0 ? Number(n).toString() : Number(n).toFixed(2);
+    }
 
     const urlParams = new URLSearchParams(window.location.search);
 
@@ -139,9 +144,9 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById('Observacion').textContent   = observacion || '';
     document.getElementById('date').textContent          = date || '';
 
-    if (priceParam) document.getElementById('price').textContent = Number(priceParam).toFixed(2);
-    if (pagoClienteParam) document.getElementById('customerPayment').textContent = Number(pagoClienteParam).toFixed(2);
-    if (cambioParam) document.getElementById('change').textContent = Number(cambioParam).toFixed(2);
+    if (priceParam) document.getElementById('price').textContent = limpiarNumero(priceParam);
+    if (pagoClienteParam) document.getElementById('customerPayment').textContent = limpiarNumero(pagoClienteParam);
+    if (cambioParam) document.getElementById('change').textContent = limpiarNumero(cambioParam);
 
     // Procesar JSON del carrito
     let totalCarrito = 0;
@@ -162,11 +167,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
                 const tdEntrada = document.createElement('td');
                 tdEntrada.className = 'num';
-                tdEntrada.textContent = entrada ? entrada.toFixed(2) : '';
+                tdEntrada.textContent = limpiarNumero(entrada);
 
                 const tdSalida = document.createElement('td');
                 tdSalida.className = 'num';
-                tdSalida.textContent = salida ? salida.toFixed(2) : '';
+                tdSalida.textContent = limpiarNumero(salida);
 
                 tr.appendChild(tdId);
                 tr.appendChild(tdEntrada);
@@ -182,15 +187,10 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    document.getElementById('totalCarrito').textContent = totalCarrito.toFixed(2);
+    document.getElementById('totalCarrito').textContent = limpiarNumero(totalCarrito);
 
 });
 </script>
 
 </body>
 </html>
-
-</html>
-
-
-
