@@ -115,7 +115,7 @@
 <script>
 document.addEventListener("DOMContentLoaded", function() {
 
-    // 🔥 Función para quitar .00 si es entero
+    // 🔥 Quitar .00 si es entero
     function limpiarNumero(n) {
         if (!n || n === 0) return "";
         return Number(n) % 1 === 0 ? Number(n).toString() : Number(n).toFixed(2);
@@ -154,6 +154,20 @@ document.addEventListener("DOMContentLoaded", function() {
     if (productosJSON) {
         try {
             const productos = JSON.parse(productosJSON);
+
+            // 🔥 ORDENAR: primero entradas, luego salidas
+            productos.sort((a, b) => {
+                const entradaA = Number(a.Entrada || 0);
+                const entradaB = Number(b.Entrada || 0);
+                const salidaA  = Number(a.Salida  || 0);
+                const salidaB  = Number(b.Salida  || 0);
+
+                if (entradaA > 0 && salidaA === 0 && entradaB === 0 && salidaB > 0) return -1;
+                if (entradaB > 0 && salidaB === 0 && entradaA === 0 && salidaA > 0) return 1;
+
+                return 0;
+            });
+
             const tbody = document.getElementById('productosBody');
 
             productos.forEach(item => {
@@ -194,3 +208,5 @@ document.addEventListener("DOMContentLoaded", function() {
 
 </body>
 </html>
+
+
