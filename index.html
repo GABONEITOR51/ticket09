@@ -33,20 +33,21 @@
         margin: 12px 0;
     }
 
-    /* Tabla alineada */
+    /* Tabla alineada con misma fuente del ticket */
     .ticket-table {
         width: 100%;
         border-collapse: collapse;
-        font-family: "Courier New", monospace;
-        font-size: 16px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 18px;
     }
     .ticket-table th,
     .ticket-table td {
-        padding: 2px 0;
+        padding: 4px 0;
     }
     .ticket-table th {
         border-bottom: 1px solid #ccc;
         text-align: left;
+        font-weight: bold;
     }
     .ticket-table td {
         border-bottom: 1px dotted #ddd;
@@ -57,10 +58,11 @@
 
     /* Total alineado */
     .total-line {
-        font-family: "Courier New", monospace;
-        font-size: 18px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 20px;
         text-align: right;
         margin-top: 10px;
+        font-weight: bold;
     }
 </style>
 </head>
@@ -76,7 +78,7 @@
         <div class="ticket-item"><strong>PRODUCTO:</strong> <span id="productName"></span></div>
         <div class="ticket-item"><strong>CLIENTE:</strong> <span id="customerName"></span></div>
         <div class="ticket-item"><strong>TELÉFONO:</strong> <span id="phoneNumber"></span></div>
-     <hr class="separator">
+        <hr class="separator">
 
         <!-- Tabla del carrito -->
         <div class="ticket-item"><strong>Movimientos:</strong></div>
@@ -98,13 +100,13 @@
         </div>
 
         <hr class="separator">
-  
+
         <div class="ticket-item"><strong>Pago en:</strong> <span id="paymentMethod"></span></div>
         <div class="ticket-item"><strong>Precio venta:</strong> $<span id="price"></span></div>
         <div class="ticket-item"><strong>Pago cliente:</strong> $<span id="customerPayment"></span></div>
         <div class="ticket-item"><strong>Cambio:</strong> $<span id="change"></span></div>
 
-         <hr class="separator">
+        <hr class="separator">
 
         <div class="ticket-item"><strong>Le atendió:</strong> <span id="executive"></span></div>
         <div class="ticket-item"><strong>Observación:</strong> <span id="Observacion"></span></div>
@@ -115,7 +117,6 @@
 <script>
 document.addEventListener("DOMContentLoaded", function() {
 
-    // 🔥 Quitar .00 si es entero
     function limpiarNumero(n) {
         if (!n || n === 0) return "";
         return Number(n) % 1 === 0 ? Number(n).toString() : Number(n).toFixed(2);
@@ -135,7 +136,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const date             = urlParams.get('fecha');
     const productosJSON    = urlParams.get('productos');
 
-    // Asignar valores simples
     document.getElementById('productName').textContent   = productName || '';
     document.getElementById('customerName').textContent  = customerName || '';
     document.getElementById('phoneNumber').textContent   = phoneNumber || '';
@@ -148,14 +148,12 @@ document.addEventListener("DOMContentLoaded", function() {
     if (pagoClienteParam) document.getElementById('customerPayment').textContent = limpiarNumero(pagoClienteParam);
     if (cambioParam) document.getElementById('change').textContent = limpiarNumero(cambioParam);
 
-    // Procesar JSON del carrito
     let totalCarrito = 0;
 
     if (productosJSON) {
         try {
             const productos = JSON.parse(productosJSON);
 
-            // 🔥 ORDENAR: primero entradas, luego salidas
             productos.sort((a, b) => {
                 const entradaA = Number(a.Entrada || 0);
                 const entradaB = Number(b.Entrada || 0);
@@ -208,5 +206,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 </body>
 </html>
+
+
 
 
