@@ -33,11 +33,9 @@
         margin: 12px 0;
     }
 
-    /* Tabla alineada con misma fuente del ticket */
     .ticket-table {
         width: 100%;
         border-collapse: collapse;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         font-size: 18px;
     }
     .ticket-table th,
@@ -56,9 +54,7 @@
         text-align: right;
     }
 
-    /* Total alineado */
     .total-line {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         font-size: 20px;
         text-align: right;
         margin-top: 10px;
@@ -74,16 +70,19 @@
             <h1>805 MULTISERVICES</h1>
         </div>
 
-        <!-- Datos del ticket -->
-        <div class="ticket-item"><strong>PRODUCTO:</strong> <span id="productName"></span></div>
+        <!-- PRODUCTO -->
+        <div class="ticket-item" id="productoSection">
+            <strong>PRODUCTO:</strong> <span id="productName"></span>
+        </div>
+
         <div class="ticket-item"><strong>CLIENTE:</strong> <span id="customerName"></span></div>
         <div class="ticket-item"><strong>TELÉFONO:</strong> <span id="phoneNumber"></span></div>
         <hr class="separator">
 
         <!-- Tabla del carrito -->
-        <div class="ticket-item"><strong>Movimientos:</strong></div>
+        <div class="ticket-item" id="movimientosTitle"><strong>Movimientos:</strong></div>
 
-        <table class="ticket-table">
+        <table class="ticket-table" id="tablaCarrito">
             <thead>
                 <tr>
                     <th style="width: 40%;">Producto</th>
@@ -94,8 +93,7 @@
             <tbody id="productosBody"></tbody>
         </table>
 
-        <!-- Total calculado -->
-        <div class="total-line">
+        <div class="total-line" id="totalCarritoDiv">
             Total: $<span id="totalCarrito"></span>
         </div>
 
@@ -201,12 +199,25 @@ document.addEventListener("DOMContentLoaded", function() {
 
     document.getElementById('totalCarrito').textContent = limpiarNumero(totalCarrito);
 
+    // --- OCULTAR TABLA DEL CARRITO SI ESTÁ VACÍA ---
+    const tablaCarrito = document.getElementById("tablaCarrito");
+    const totalCarritoDiv = document.getElementById("totalCarritoDiv");
+    const movimientosTitle = document.getElementById("movimientosTitle");
+
+    if (!productosJSON || productosJSON === "[]" || totalCarrito === 0) {
+        tablaCarrito.style.display = "none";
+        totalCarritoDiv.style.display = "none";
+        movimientosTitle.style.display = "none";
+    }
+
+    // --- OCULTAR PRODUCTO SI HAY CARRITO ---
+    if (productosJSON && productosJSON !== "[]") {
+        const productoSection = document.getElementById("productoSection");
+        productoSection.style.display = "none";
+    }
+
 });
 </script>
 
 </body>
 </html>
-
-
-
-
