@@ -99,10 +99,9 @@
 
         <hr class="separator">
 
-        <div class="ticket-item"><strong>Pago en:</strong> <span id="paymentMethod"></span></div>
-        <div class="ticket-item"><strong>Precio venta:</strong> $<span id="price"></span></div>
-        <div class="ticket-item"><strong>Pago cliente:</strong> $<span id="customerPayment"></span></div>
-        <div class="ticket-item"><strong>Cambio:</strong> $<span id="change"></span></div>
+        <div class="ticket-item" id="precioVentaSection"><strong>Precio venta:</strong> $<span id="price"></span></div>
+        <div class="ticket-item" id="pagoClienteSection"><strong>Pago cliente:</strong> $<span id="customerPayment"></span></div>
+        <div class="ticket-item" id="cambioSection"><strong>Cambio:</strong> $<span id="change"></span></div>
 
         <hr class="separator">
 
@@ -137,7 +136,6 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById('productName').textContent   = productName || '';
     document.getElementById('customerName').textContent  = customerName || '';
     document.getElementById('phoneNumber').textContent   = phoneNumber || '';
-    document.getElementById('paymentMethod').textContent = paymentMethod || '';
     document.getElementById('executive').textContent     = executive || '';
     document.getElementById('Observacion').textContent   = observacion || '';
     document.getElementById('date').textContent          = date || '';
@@ -212,8 +210,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // --- OCULTAR PRODUCTO SI HAY CARRITO ---
     if (productosJSON && productosJSON !== "[]") {
-        const productoSection = document.getElementById("productoSection");
-        productoSection.style.display = "none";
+        document.getElementById("productoSection").style.display = "none";
+    }
+
+    // --- OCULTAR PRECIO, PAGO CLIENTE Y CAMBIO SI HAY CARRITO ---
+    if (productosJSON && productosJSON !== "[]") {
+        document.getElementById("precioVentaSection").style.display = "none";
+        document.getElementById("pagoClienteSection").style.display = "none";
+        document.getElementById("cambioSection").style.display = "none";
     }
 
 });
