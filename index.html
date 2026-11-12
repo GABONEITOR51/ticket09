@@ -100,6 +100,35 @@
         font-weight: bold;
         margin-bottom: 6px;
     }
+    /* ---- Ajustes: texto compacto, montos en tabla con bordes ---- */
+    .ticket-header { margin-bottom: 8px; }
+    .ticket-item { margin-bottom: 3px; line-height: 1.25; }
+    hr.separator { margin: 6px 0; }
+    #customerName {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: clip;
+    }
+    .ticket-table,
+    .pago-table {
+        border: 1px solid #000;
+        margin-top: 4px;
+    }
+    .ticket-table th,
+    .ticket-table td,
+    .pago-table td {
+        padding: 2px 6px;
+        border-bottom: 1px solid #000;
+    }
+    .ticket-table th + th,
+    .ticket-table td + td,
+    .pago-table td + td {
+        border-left: 1px solid #000;
+    }
+    .pago-table tr.total td { padding-top: 3px; }
+    .total-line { margin-top: 4px; }
+    .pago-titulo { margin-bottom: 2px; }
 </style>
 </head>
 
