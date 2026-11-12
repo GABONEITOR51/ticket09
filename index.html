@@ -30,6 +30,12 @@
         height: auto;
         margin: 0 auto;
     }
+    /* Nombre del cliente en una sola linea */
+    #customerName {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+    }
     .ticket-item {
         margin-bottom: 10px;
     }
@@ -103,7 +109,7 @@
 </style>
 </head>
 
-<body onload="window.print()" onfocus="window.close()">
+<body>
     <div class="ticket">
 
         <div class="ticket-header">
@@ -194,6 +200,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // ---- Datos generales ----
     document.getElementById('productName').textContent   = get('producto');
     document.getElementById('customerName').textContent  = get('cliente');
+    ajustarUnaLinea(document.getElementById('customerName'));
     document.getElementById('phoneNumber').textContent   = get('telefono');
     document.getElementById('paymentMethod').textContent = get('formadepago');
     document.getElementById('executive').textContent     = get('leatendio');
@@ -333,6 +340,21 @@ document.addEventListener("DOMContentLoaded", function() {
         if (hayCarrito) hide('legacySection');
     }
 });
+// Corta el texto hasta la ultima palabra completa que cabe en una linea
+function ajustarUnaLinea(el) {
+    if (!el) return;
+    let palabras = el.textContent.trim().split(/\s+/);
+    while (palabras.length > 1 && el.scrollWidth > el.clientWidth) {
+        palabras.pop();
+        el.textContent = palabras.join(' ');
+    }
+}
+
+// Imprimir al cargar y cerrar la ventana solo despues de imprimir/cancelar
+window.addEventListener('load', function() {
+    setTimeout(function() { window.print(); }, 300);
+});
+window.addEventListener('afterprint', function() { window.close(); });
 </script>
 
 </body>
