@@ -60,6 +60,39 @@
         margin-top: 10px;
         font-weight: bold;
     }
+
+    /* Resumen de pago */
+    .pago-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 18px;
+    }
+    .pago-table td {
+        padding: 3px 0;
+    }
+    .pago-table td.num {
+        text-align: right;
+        white-space: nowrap;
+    }
+    .pago-table tr.sub td {
+        font-size: 14px;
+        color: #444;
+        padding-left: 12px;
+    }
+    .pago-table tr.total td {
+        border-top: 2px solid #333;
+        font-weight: bold;
+        font-size: 20px;
+        padding-top: 6px;
+    }
+    .pago-table tr.cambio td {
+        font-weight: bold;
+        font-size: 20px;
+    }
+    .pago-titulo {
+        font-weight: bold;
+        margin-bottom: 6px;
+    }
 </style>
 </head>
 
@@ -81,33 +114,44 @@
         <hr class="separator">
 
         <!-- Tabla del carrito -->
-        <div class="ticket-item" id="movimientosTitle"><strong>Movimientos:</strong></div>
+        <div id="carritoSection">
+            <div class="ticket-item"><strong>Movimientos:</strong></div>
 
-        <table class="ticket-table" id="tablaCarrito">
-            <thead>
-                <tr>
-                    <th style="width: 40%;">Producto</th>
-                    <th style="width: 30%; text-align:right;">Entrada</th>
-                    <th style="width: 30%; text-align:right;">Salida</th>
-                </tr>
-            </thead>
-            <tbody id="productosBody"></tbody>
-        </table>
+            <table class="ticket-table">
+                <thead>
+                    <tr>
+                        <th style="width: 40%;">Producto</th>
+                        <th style="width: 30%; text-align:right;">Entrada</th>
+                        <th style="width: 30%; text-align:right;">Salida</th>
+                    </tr>
+                </thead>
+                <tbody id="productosBody"></tbody>
+            </table>
 
-        <div class="total-line" id="totalCarritoDiv">
-            Total: $<span id="totalCarrito"></span>
+            <div class="total-line">
+                Total movimientos: $<span id="totalCarrito"></span>
+            </div>
+
+            <hr class="separator">
         </div>
 
-        <hr class="separator">
+        <!-- Resumen de pago (nuevo) -->
+        <div id="pagoSection" style="display:none;">
+            <div class="pago-titulo">PAGO:</div>
+            <table class="pago-table" id="pagoTable"></table>
+            <hr class="separator">
+        </div>
 
-        <div class="ticket-item" id="precioVentaSection"><strong>Precio venta:</strong> $<span id="price"></span></div>
-        <div class="ticket-item" id="pagoClienteSection"><strong>Pago cliente:</strong> $<span id="customerPayment"></span></div>
-        <div class="ticket-item" id="cambioSection"><strong>Cambio:</strong> $<span id="change"></span></div>
-
-        <hr class="separator">
+        <!-- Formato anterior (se usa solo si AppSheet no manda el desglose) -->
+        <div id="legacySection">
+            <div class="ticket-item" id="precioVentaSection"><strong>Precio venta:</strong> $<span id="price"></span></div>
+            <div class="ticket-item" id="pagoClienteSection"><strong>Pago cliente:</strong> $<span id="customerPayment"></span></div>
+            <div class="ticket-item" id="cambioSection"><strong>Cambio:</strong> $<span id="change"></span></div>
+            <hr class="separator">
+        </div>
 
         <div class="ticket-item"><strong>Le atendió:</strong> <span id="executive"></span></div>
-        <div class="ticket-item"><strong>Observación:</strong> <span id="Observacion"></span></div>
+        <div class="ticket-item" id="observacionSection"><strong>Observación:</strong> <span id="Observacion"></span></div>
         <div class="ticket-item"><strong>Fecha:</strong> <span id="date"></span></div>
 
     </div>
@@ -115,113 +159,172 @@
 <script>
 document.addEventListener("DOMContentLoaded", function() {
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const get = k => (urlParams.get(k) || '').trim();
+
+    // Convierte "1,234.50", " 12 ", "" -> número (o null si no hay valor)
+    function num(v) {
+        if (v === null || v === undefined) return null;
+        const s = String(v).replace(/[$,\s]/g, '');
+        if (s === '') return null;
+        const n = Number(s);
+        return isNaN(n) ? null : n;
+    }
+    // Redondeo a centavos para evitar errores de punto flotante
+    function r2(n) { return Math.round((Number(n) || 0) * 100) / 100; }
+    // Formato de dinero: siempre 2 decimales y separador de miles
+    function money(n) {
+        return r2(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+    // Formato anterior (para compatibilidad)
     function limpiarNumero(n) {
-        if (!n || n === 0) return "";
+        if (!n || Number(n) === 0) return "";
         return Number(n) % 1 === 0 ? Number(n).toString() : Number(n).toFixed(2);
     }
+    function hide(id) { const el = document.getElementById(id); if (el) el.style.display = 'none'; }
+    function show(id) { const el = document.getElementById(id); if (el) el.style.display = ''; }
 
-    const urlParams = new URLSearchParams(window.location.search);
+    // ---- Datos generales ----
+    document.getElementById('productName').textContent   = get('producto');
+    document.getElementById('customerName').textContent  = get('cliente');
+    document.getElementById('phoneNumber').textContent   = get('telefono');
+    document.getElementById('paymentMethod').textContent = get('formadepago');
+    document.getElementById('executive').textContent     = get('leatendio');
+    document.getElementById('date').textContent          = get('fecha');
 
-    const productName      = urlParams.get('producto');
-    const customerName     = urlParams.get('cliente');
-    const phoneNumber      = urlParams.get('telefono');
-    const paymentMethod    = urlParams.get('formadepago');
-    const priceParam       = urlParams.get('precio');
-    const pagoClienteParam = urlParams.get('pagocliente');
-    const cambioParam      = urlParams.get('cambio');
-    const executive        = urlParams.get('leatendio');
-    const observacion      = urlParams.get('observacion');
-    const date             = urlParams.get('fecha');
-    const productosJSON    = urlParams.get('productos');
+    // ---- Observación: ocultar si está vacía ----
+    const observacion = get('observacion');
+    if (observacion) {
+        document.getElementById('Observacion').textContent = observacion;
+    } else {
+        hide('observacionSection');
+    }
 
-    document.getElementById('productName').textContent   = productName || '';
-    document.getElementById('customerName').textContent  = customerName || '';
-    document.getElementById('phoneNumber').textContent   = phoneNumber || '';
-    document.getElementById('paymentMethod').textContent = paymentMethod || '';
-    document.getElementById('executive').textContent     = executive || '';
-    document.getElementById('Observacion').textContent   = observacion || '';
-    document.getElementById('date').textContent          = date || '';
-
-    if (priceParam) document.getElementById('price').textContent = limpiarNumero(priceParam);
-    if (pagoClienteParam) document.getElementById('customerPayment').textContent = limpiarNumero(pagoClienteParam);
-    if (cambioParam) document.getElementById('change').textContent = limpiarNumero(cambioParam);
+    // ---- Carrito ----
+    const productosJSON = get('productos');
+    let productos = [];
+    if (productosJSON && productosJSON !== '[]') {
+        try { productos = JSON.parse(productosJSON) || []; }
+        catch (e) { console.error("Error al procesar productos:", e); productos = []; }
+    }
+    const hayCarrito = productos.length > 0;
 
     let totalCarrito = 0;
+    if (hayCarrito) {
+        // Entradas primero, luego salidas
+        productos.sort((a, b) => {
+            const ea = Number(a.Entrada || 0), sa = Number(a.Salida || 0);
+            const eb = Number(b.Entrada || 0), sb = Number(b.Salida || 0);
+            if (ea > 0 && sa === 0 && eb === 0 && sb > 0) return -1;
+            if (eb > 0 && sb === 0 && ea === 0 && sa > 0) return 1;
+            return 0;
+        });
 
-    if (productosJSON) {
-        try {
-            const productos = JSON.parse(productosJSON);
+        const tbody = document.getElementById('productosBody');
+        productos.forEach(item => {
+            const entrada = Number(item.Entrada || 0);
+            const salida  = Number(item.Salida  || 0);
 
-            productos.sort((a, b) => {
-                const entradaA = Number(a.Entrada || 0);
-                const entradaB = Number(b.Entrada || 0);
-                const salidaA  = Number(a.Salida  || 0);
-                const salidaB  = Number(b.Salida  || 0);
+            const tr = document.createElement('tr');
+            const tdId = document.createElement('td');
+            tdId.textContent = item.IDProducto || '';
+            const tdE = document.createElement('td');
+            tdE.className = 'num';
+            tdE.textContent = entrada ? money(entrada) : '';
+            const tdS = document.createElement('td');
+            tdS.className = 'num';
+            tdS.textContent = salida ? money(salida) : '';
+            tr.appendChild(tdId); tr.appendChild(tdE); tr.appendChild(tdS);
+            tbody.appendChild(tr);
 
-                if (entradaA > 0 && salidaA === 0 && entradaB === 0 && salidaB > 0) return -1;
-                if (entradaB > 0 && salidaB === 0 && entradaA === 0 && salidaA > 0) return 1;
+            totalCarrito += entrada - salida;
+        });
+        totalCarrito = r2(totalCarrito);
+        document.getElementById('totalCarrito').textContent =
+            (totalCarrito < 0 ? '-' : '') + money(Math.abs(totalCarrito));
+        hide('productoSection');
+    } else {
+        hide('carritoSection');
+    }
 
-                return 0;
-            });
+    // ---- Resumen de pago ----
+    const efectivo    = num(urlParams.get('efectivo'));
+    const zelle       = num(urlParams.get('zelle'));
+    const tarjeta     = num(urlParams.get('tarjeta'));    // ya incluye el 3%
+    const directo     = num(urlParams.get('directo'));
+    const subtotal    = num(urlParams.get('subtotal'));   // TotalBaseConCarrito (sin cargo de tarjeta)
+    const pagoCliente = num(urlParams.get('pagocliente'));
 
-            const tbody = document.getElementById('productosBody');
+    const hayDesglose = [efectivo, zelle, tarjeta, directo, subtotal].some(v => v !== null);
 
-            productos.forEach(item => {
-                const tr = document.createElement('tr');
+    if (hayDesglose) {
+        hide('legacySection');
+        show('pagoSection');
 
-                const tdId = document.createElement('td');
-                tdId.textContent = item.IDProducto || '';
-
-                const entrada = Number(item.Entrada || 0);
-                const salida  = Number(item.Salida  || 0);
-
-                const tdEntrada = document.createElement('td');
-                tdEntrada.className = 'num';
-                tdEntrada.textContent = limpiarNumero(entrada);
-
-                const tdSalida = document.createElement('td');
-                tdSalida.className = 'num';
-                tdSalida.textContent = limpiarNumero(salida);
-
-                tr.appendChild(tdId);
-                tr.appendChild(tdEntrada);
-                tr.appendChild(tdSalida);
-                tbody.appendChild(tr);
-
-                totalCarrito += entrada;
-                totalCarrito -= salida;
-            });
-
-        } catch (e) {
-            console.error("Error al procesar productos:", e);
+        const table = document.getElementById('pagoTable');
+        function fila(label, valor, clase, prefijo) {
+            const tr = document.createElement('tr');
+            if (clase) tr.className = clase;
+            const a = document.createElement('td'); a.textContent = label;
+            const b = document.createElement('td'); b.className = 'num';
+            b.textContent = (prefijo || '') + '$' + money(valor);
+            tr.appendChild(a); tr.appendChild(b);
+            table.appendChild(tr);
         }
+
+        const ef  = r2(efectivo || 0);
+        const ze  = r2(zelle || 0);
+        const ta  = r2(tarjeta || 0);
+        const di  = r2(directo || 0);
+        const sub = subtotal !== null ? r2(subtotal) : null;
+
+        // Caso: el saldo es a favor del cliente (se le entrega dinero)
+        if (sub !== null && sub < 0) {
+            fila('ENTREGAR AL CLIENTE', Math.abs(sub), 'total');
+        } else {
+            const cargoTarjeta = ta > 0 ? r2(ta - ta / 1.03) : 0;
+            const totalPagado  = r2(ef + ze + ta + di);
+
+            // Subtotal solo si hay cargo de tarjeta (si no, es igual al total)
+            if (sub !== null && cargoTarjeta > 0) fila('Subtotal', sub);
+
+            if (ef > 0) fila('💵 Efectivo', ef);
+            if (ze > 0) fila('💸 Zelle', ze);
+            if (ta > 0) {
+                fila('💳 Tarjeta', ta);
+                fila('incluye cargo 3%', cargoTarjeta, 'sub');
+            }
+            if (di > 0) fila('🏢 Pago directo', di);
+
+            if (totalPagado > 0) {
+                fila('TOTAL', totalPagado, 'total');
+            } else if (sub !== null && sub > 0) {
+                // Diferido u otra forma sin desglose
+                fila('TOTAL', sub, 'total');
+            }
+
+            // Efectivo recibido y cambio (el cambio se calcula SOLO contra la parte en efectivo)
+            if (pagoCliente !== null && pagoCliente > 0 && ef > 0) {
+                const recibido = r2(pagoCliente);
+                fila('Efectivo recibido', recibido);
+                const cambio = r2(recibido - ef);
+                if (cambio > 0) fila('CAMBIO', cambio, 'cambio');
+                else if (cambio < 0) fila('FALTA', Math.abs(cambio), 'cambio');
+            }
+        }
+    } else {
+        // ---- Formato anterior (compatibilidad) ----
+        const priceParam  = get('precio');
+        const pagoParam   = get('pagocliente');
+        const cambioParam = get('cambio');
+        if (priceParam)  document.getElementById('price').textContent = limpiarNumero(priceParam);
+        else hide('precioVentaSection');
+        if (pagoParam)   document.getElementById('customerPayment').textContent = limpiarNumero(pagoParam);
+        else hide('pagoClienteSection');
+        if (cambioParam) document.getElementById('change').textContent = limpiarNumero(cambioParam);
+        else hide('cambioSection');
+        if (hayCarrito) hide('legacySection');
     }
-
-    document.getElementById('totalCarrito').textContent = limpiarNumero(totalCarrito);
-
-    // --- OCULTAR TABLA DEL CARRITO SI ESTÁ VACÍA ---
-    const tablaCarrito = document.getElementById("tablaCarrito");
-    const totalCarritoDiv = document.getElementById("totalCarritoDiv");
-    const movimientosTitle = document.getElementById("movimientosTitle");
-
-    if (!productosJSON || productosJSON === "[]" || totalCarrito === 0) {
-        tablaCarrito.style.display = "none";
-        totalCarritoDiv.style.display = "none";
-        movimientosTitle.style.display = "none";
-    }
-
-    // --- OCULTAR PRODUCTO SI HAY CARRITO ---
-    if (productosJSON && productosJSON !== "[]") {
-        document.getElementById("productoSection").style.display = "none";
-    }
-
-    // --- OCULTAR PRECIO, PAGO CLIENTE Y CAMBIO SI HAY CARRITO ---
-    if (productosJSON && productosJSON !== "[]") {
-        document.getElementById("precioVentaSection").style.display = "none";
-        document.getElementById("pagoClienteSection").style.display = "none";
-        document.getElementById("cambioSection").style.display = "none";
-    }
-
 });
 </script>
 
